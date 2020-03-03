@@ -48,7 +48,7 @@ class MainWindow(tk.Tk):
 
         self.frames = {}
 
-        for F in (MenuPage, LoginPage, RegisterPage, UserPage, BMIPage, CalorieSelectPage, CalorieLosePage,CalorieGainPage, WorkoutPage ): #initialize classes - each class is an individual frame
+        for F in (MenuPage, LoginPage, RegisterPage, UserPage, BMIPage, CalorieSelectPage, CalorieLosePage,CalorieGainPage, WorkoutPage, MotivationPage ): #initialize classes - each class is an individual frame
 
             frame = F(container, self)
 
@@ -148,16 +148,21 @@ class LoginPage(tk.Frame):
                 finduser = ("Select * FROM studentlist WHERE Username=? AND Password=?")
                 cursor.execute(finduser,[(self.username_entry.get()),(self.password_entry.get())])
                 results = cursor.fetchall()
+               
                 
                 
                 if results:
                     for i in results:
                        self.controller.showFrame(UserPage)
-                       
+                       self.message.destroy()
+                    
+                
                 else:
        
-                    message = ttk.Label( text = 'Username or Password incorrect. Try again!')
-                    message.pack(side = "top")
+                    self.message = ttk.Label( text = 'Username or Password incorrect. Try again!')
+                    self.message.pack
+                    self.message.place(x = 400 ,y = 500)        
+                    
 
         
         
@@ -275,7 +280,7 @@ class RegisterPage(tk.Frame):
         GenderEntry = ttk.Combobox(self, values=["Male", "Female"])
         GenderEntry.pack
         GenderEntry.place(x=450,y=440)
-        
+#        
         
         
         
@@ -302,12 +307,13 @@ class RegisterPage(tk.Frame):
     def validation(self):
         return len(self.fname_entry.get()) != 0 and len(self.lname_entry.get()) != 0 and len(self.username_entry.get()) != 0 and \
                len(self.email_entry.get()) != 0 and len(self.password_entry.get()) != 0 and len(self.age_entry.get()) != 0 and \
-               len(self.weight_entry.get()) != 0 and len(self.height_entry.get()) != 0
+               len(self.weight_entry.get()) != 0 and len(self.height_entry.get()) != 0               
 
     def add_record(self):
         
         if self.validation():
             query = 'INSERT INTO studentlist VALUES (NULL,?,?,?,?,?,?,?,?)'
+
             parameters = (self.fname_entry.get(), self.lname_entry.get(), self.username_entry.get(),
                           self.email_entry.get(), self.password_entry.get(), self.age_entry.get(), self.height_entry.get(), self.weight_entry.get())
             self.run_query(query, parameters)
@@ -338,28 +344,45 @@ class UserPage(tk.Frame):
         self.msp_controller=controller
         
         
-#         Welcome label on MainMenuPage
+#       Hello user label
         self.msp_label = ttk.Label(self, text="Hello User", font= ('Arial' , 50, 'bold',),borderwidth = 2, relief = "groove")
         self.msp_label.pack(side="top",pady=20) # size of window
  
 
-        # Creation of BMI calculation button
-        loginButton = ttk.Button(self, text="BMI", style='my.TButton', command=lambda: controller.showFrame(BMIPage))
-        loginButton.pack(side="top", pady = 10)
-#        loginButton.place(x = 480,y = 325 )
+        # Creation of BMI calculation button and BMI label
+        BMIlabel = ttk.Label(self, text="Calculate your BMI", font= ('times' , 20, 'bold',),borderwidth = 2, relief = "groove")
+        BMIlabel.pack
+        BMIlabel.place(x = 80, y= 150)
+        BMIButton = ttk.Button(self, text="BMI", command=lambda: controller.showFrame(BMIPage))
+        BMIButton.pack(side="top", pady = 10)
+        BMIButton.place(x = 110,y = 200 )
        
         
         # Creation of calorie intake button
-        registerButton = ttk.Button(self, text="Caloric intake",style='my.TButton', command=lambda: controller.showFrame(CalorieSelectPage))
-        registerButton.pack(side = "top", pady = 0)
-#        registerButton.place(x = 480,y = 375 )
-        
+        CalorieButton = ttk.Button(self, text="Caloric intake", command=lambda: controller.showFrame(CalorieSelectPage))
+        CalorieButton.pack(side = "top", pady = 0)
+        CalorieButton.place(x = 820,y = 200 )
+        Calorielabel = ttk.Label(self, text="Calculate your Daily Caloric Intake", font= ('times' , 20, 'bold',),borderwidth = 2, relief = "groove")
+        Calorielabel.pack
+        Calorielabel.place(x = 725, y= 150)
                
-        # Creation of Delete button
-        registerButton = ttk.Button(self, text="Workout",style='my.TButton', command=lambda: controller.showFrame(WorkoutPage))
-        registerButton.pack(side = "top", pady = 0)
-#        registerButton.place(x = 480,y = 375 )
-        
+        # Creation of workout button
+        WorkoutButton = ttk.Button(self, text="Workout", command=lambda: controller.showFrame(WorkoutPage))
+        WorkoutButton.pack(side = "top", pady = 0)
+        WorkoutButton.place(x = 470,y =200 )
+        Workoutlabel = ttk.Label(self, text="Let's Workout!", font= ('times' , 20, 'bold',),borderwidth = 2, relief = "groove")
+        Workoutlabel.pack
+        Workoutlabel.place(x = 445, y= 150)
+
+               
+        # Creation of Motivaltional quotes button
+        MotivationButton = ttk.Button(self, text="Motivation", command=lambda: controller.showFrame(MotivationPage))
+        MotivationButton.pack(side = "top", pady = 0)
+        MotivationButton.place(x = 465,y =400 )
+        Workoutlabel = ttk.Label(self, text="Feeling Unmotivated?", font= ('times' , 20, 'bold',),borderwidth = 2, relief = "groove")
+        Workoutlabel.pack
+        Workoutlabel.place(x = 430, y= 350)
+
         
 class BMIPage(tk.Frame):
     def __init__(self, parent, controller):        
@@ -436,11 +459,11 @@ class BMIPage(tk.Frame):
         
 
         # Creation of BMI calculation button
-        self.BMIButton = ttk.Button(self, text="BMI", style='my.TButton', command=lambda: self.BMICalculation())
+        self.BMIButton = ttk.Button(self, text="BMI",  command=lambda: self.BMICalculation())
         self.BMIButton.pack
         self.BMIButton.place(x = 480,y = 525 )
        
-        backbutton = ttk.Button(self, text="Back", style='my.TButton', command=lambda: self.controller.showFrame(UserPage))
+        backbutton = ttk.Button(self, text="Back", command=lambda: self.controller.showFrame(UserPage))
         backbutton.pack
         backbutton.place(x = 480,y = 560 )
   
@@ -512,13 +535,13 @@ class CalorieSelectPage(tk.Frame):
       
   
          
-        continuebutton = ttk.Button(self, text="Continue", style='my.TButton', command=lambda: self.WGoals() )
+        continuebutton = ttk.Button(self, text="Continue", command=lambda: self.WGoals() )
         continuebutton.pack
         continuebutton.place(x = 480,y = 350 )  
             
   
         
-        backbutton = ttk.Button(self, text="Back", style='my.TButton', command=lambda: self.controller.showFrame(UserPage))
+        backbutton = ttk.Button(self, text="Back", command=lambda: self.controller.showFrame(UserPage))
         backbutton.pack
         backbutton.place(x = 480,y = 400 )  
             
@@ -621,13 +644,13 @@ class CalorieLosePage(tk.Frame):
         
 
 
-        self.continuebutton = ttk.Button(self, text="Calorie Count", style='my.TButton', command=lambda: self.WlossCalc() )
+        self.continuebutton = ttk.Button(self, text="Calorie Count",command=lambda: self.WlossCalc() )
         self.continuebutton.pack
-        self.continuebutton.place(x = 445,y = 400 )  
+        self.continuebutton.place(x = 455,y = 400 )  
             
   
         
-        backbutton = ttk.Button(self, text="Back", style='my.TButton', command=lambda: self.controller.showFrame(UserPage))
+        backbutton = ttk.Button(self, text="Back", command=lambda: self.controller.showFrame(UserPage))
         backbutton.pack
         backbutton.place(x = 480,y = 440 )  
 
@@ -899,9 +922,146 @@ class WorkoutPage(tk.Frame):
         self.BMIlabel.pack(side="top",pady=20) # size of window
         
         
-        
+
+      
+        ChestButton = ttk.Button(self, text="Chest",  command=lambda: controller.showFrame(UserPage))
+        ChestButton.pack(side="top", pady = 10)
+        ChestButton.place(x = 110,y = 200 )
        
-         
+        
+        # Creation of calorie intake button
+        ShouldersButton = ttk.Button(self, text="Shoulders", command=lambda: controller.showFrame(UserPage))
+        ShouldersButton.pack(side = "top", pady = 0)
+        ShouldersButton.place(x = 800,y = 200 )
+      
+               
+        # Creation of workout button
+        BackButton = ttk.Button(self, text="Back", command=lambda: controller.showFrame(UserPage))
+        BackButton.pack(side = "top", pady = 0)
+        BackButton.place(x = 465,y =200 )
+       
+               
+        # Creation of Motivaltional quotes button
+        LegsButton = ttk.Button(self, text="Legs", command=lambda: controller.showFrame(UserPage))
+        LegsButton.pack(side = "top", pady = 0)
+        LegsButton.place(x = 465,y =325 )
+      
+        backbutton = ttk.Button(self, text="Return", style='my.TButton', command=lambda: self.controller.showFrame(UserPage))
+        backbutton.pack
+        backbutton.place(x = 450,y = 500 )  
+
+        
+class MotivationPage(tk.Frame):
+    def __init__(self, parent, controller):        
+        tk.Frame.__init__(self,parent)
+        self.controller=controller
+        
+        self.msp_label = ttk.Label(self, text="1. Be proud. Don't wait until you've reached your goal to be proud of yourself.",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="2. Consider the possibilities. When you're at the gym feeling like you'll never be one...",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        self.msp_label = ttk.Label(self, text="3. Make fitness a habit. Motivation is what gets you started. Habit is what keeps you going.",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="4. If you want to be the best at what you do, then you need to love what you do.",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="5. Success in on the other side of pain",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="6. Train your mind and the rest of your body will follow",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="7. No Pain, No Gain",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="8. When people tell you that you can't do it, show them that you can",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="9. Set your goal then go BEAST MODE to achieve it",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="10. Your only competetion is who you see in the mirror everyday",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="11. Motivate, dominate, and never hesitate",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="12. Train insane, or remain the same",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="13. Do your best and forget the rest",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="14. when you feel like giving up, remember why you started",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="15 Stop wishing and start doing",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="16. Be the best version of yourself",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="17. ig you give 50 percent effort, you get 50 percent result, always give 100",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="18. Ask yourself how bad do you want it? then let go of everything thats holding you back",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="19. Find what makes you want to workout, then start to think about it everyday",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="20. Remember that in order to be the best, you have to be the hardest worker in the gym period",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="21. Be the person people look up to at the gym by giving 100 percent everyday",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="22. Muscles are earned, not given, so go to the gym and earn them",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="23. Success rented, not ownde, and rent is due every single day",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+        
+        self.msp_label = ttk.Label(self, text="24. Don't leave the gym when you are tired, leave when you are done.",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+    
+        self.msp_label = ttk.Label(self, text="25. Stop wishing and start doing. give your future self something to be thankful for",
+        font= ('Deja Vu Sans Mono' , 11))
+        self.msp_label.pack(side="top",pady=5) # size of window
+
+        # Creation of Machine Select button. Button returns to MachineSelectPage when pressed
+        self.amp_ms_btn = ttk.Button(self, text="Back", style='my.TButton', command=lambda: controller.showFrame(MenuPage))
+        self.amp_ms_btn.pack(side="top")
+       
+        backbutton = ttk.Button(self, text="Back", command=lambda: self.controller.showFrame(UserPage))
+        backbutton.pack
+        backbutton.place(x = 850,y = 375 )  
 
 #--------------------------------------------------------
 # Main
@@ -924,3 +1084,4 @@ app.title("TitanFit")
 
 app.mainloop()
 app.quit()
+
